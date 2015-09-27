@@ -1,0 +1,67 @@
+---
+logo        : 4719eb8d7229ccc240deb9b16ebd02b2.jpg
+title       : Exploration and Predictions of the Iris Dataset
+subtitle    : Because We Can
+author      : Developing Data Products
+job         : Data Science Specialization
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : default      # 
+widgets     : [mathjax]            # {mathjax, quiz, bootstrap}
+mode        : standalone # {standalone, draft}
+knit        : slidify::knit2slides
+
+---
+
+## What It Does
+
+
+For you investigative human being who always wished to be able to predict the species of iris flowers by measuring its petals' width and length, search no more!
+
+It can be found following this link:
+[Exploration and Predictions of the Iris Dataset](https://gelinator.shinyapps.io/MyShinyApp "Iris Prediction App")
+
+The code can be found [here](https://github.com/Gelinator/SlidifyAssignment "GitHub Repo"):
+
+
+---
+
+``` {r packages, echo=FALSE,message=FALSE}
+require(caret)
+require(randomForest)
+require(ggplot2)
+require(knitr)
+```
+
+
+## Exploration
+
+The exploration segment consists of using the sliders to position the desired petal measurements. The input from the sliders is fed to the vertical and horizontal lines from the **ggplot2** graph to form a crosshair, indicating where this specimen would be located compared to the observations in the iris dataset.
+
+---
+
+## Prediction
+
+Using a random forest algorithm on the entire dataset, the resulting predictive model is with the two values provided by the slider inputs, and returning the predicted iris species. The reason for choosing these two measurements is two folds. First, the interpretation and presentation of a two-dimensional model is relatively simple. As the next slide will show, it also provides considerable predictive accuracy.
+
+---
+
+## Explaining the Rationale
+
+``` {r Calculation,message=FALSE, echo=FALSE, warning = FALSE,results="hide"}
+set.seed(543)
+data("iris")
+rfFull <- train(Species ~ .,iris, "rf")
+rfLight <- train(Species ~ Petal.Length+Petal.Width,iris, "rf")
+
+Acc <- data.frame(rfFull=rfFull$results$Accuracy[1],rfLight=rfLight$results$Accuracy[1])
+```
+
+Using all the variables gave an accuracy of `r round(rfFull$results$Accuracy[1],3)`, with the following results as variable importance is concerned.
+
+```{r Cabling, message=FALSE, echo=FALSE, warning = FALSE}
+kable(round(varImp(rfFull)$importance,1))
+```
+
+
+Petal width and length really stand out as the main distinctive variables and a model built solely on those two variables gave similar accuracy at `r round(rfLight$results$Accuracy[1],3)`, hence their selection for the app.
